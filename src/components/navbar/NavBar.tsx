@@ -83,7 +83,6 @@ export default function NavBar({ user }: NavBarProps) {
                         <div className={styles.userEmail}>{user.email}</div>
                       </div>
                       <hr className={styles.divider} />
-                      <hr className={styles.divider} />
                       <form action="/api/auth/signout" method="POST">
                         <button type="submit" className={styles.signOutButton}>
                           Sign Out
