@@ -12,6 +12,7 @@
     "@lucia-auth/adapter-postgresql": "^3.1.2",
     "@neondatabase/serverless": "^0.9.5",
     "@types/pg": "^8.15.5",
+    "@uiw/react-md-editor": "^4.0.8",
     "arctic": "^3.7.0",
     "lucia": "^3.2.2",
     "nanoid": "^5.1.5",

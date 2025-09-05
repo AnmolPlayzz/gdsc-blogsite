@@ -46,13 +46,8 @@ declare module "lucia" {
 // Delete session token cookie
 export async function deleteSessionTokenCookie(): Promise<void> {
     const cookieStore = await cookies();
-    cookieStore.set("session", "", {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 0,
-        path: "/"
-    });
+    const sessionCookie = lucia.createBlankSessionCookie();
+    cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 }
 
 // Invalidate session

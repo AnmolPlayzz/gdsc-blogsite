@@ -3,6 +3,8 @@
 import { getCurrentSession, invalidateSession, lucia } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import sql from "@/lib/db";
+import { nanoid } from "nanoid";
 
 export async function logout() {
     const { session } = await getCurrentSession();
@@ -15,4 +17,119 @@ export async function logout() {
     cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
     
     redirect("/login");
+}
+
+export interface Category {
+    id: string;
+    name: string;
+}
+
+export async function getCategories(): Promise<Category[]> {
+    try {
+        const categories = await sql`
+            SELECT * FROM categories ORDER BY name ASC
+        `;
+        
+        return categories.map((category: any) => ({
+            id: category.id,
+            name: category.name
+        }));
+    } catch (error) {
+        console.error("Error fetching categories:", error);
+        throw new Error("Failed to fetch categories");
+    }
+}
+
+function generateSlugFromTitle(title: string): string {
+    return title
+        .toLowerCase()
+        .trim()
+        // Replace accented characters with their base equivalents
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        // Remove special characters except spaces and hyphens
+        .replace(/[^a-z0-9\s-]/g, '')
+        // Replace multiple spaces with single spaces
+        .replace(/\s+/g, ' ')
+        // Replace spaces with hyphens
+        .replace(/\s/g, '-')
+        // Replace multiple hyphens with single hyphen
+        .replace(/-+/g, '-')
+        // Remove leading/trailing hyphens
+        .replace(/^-+|-+$/g, '');
+}
+
+export async function createPost(formData: FormData) {
+    const { user } = await getCurrentSession();
+    
+    if (!user) {
+        throw new Error("Unauthorized");
+    }
+
+    const title = formData.get("title") as string;
+    const content = formData.get("content") as string;
+    const category = formData.get("category") as string;
+
+    // Validation
+    if (!title || title.trim().length === 0) {
+        throw new Error("Title is required");
+    }
+
+    if (!content || content.trim().length === 0) {
+        throw new Error("Content is required");
+    }
+
+    if (!category || category.trim().length === 0) {
+        throw new Error("Category is required");
+    }
+
+    // Generate slug from title on backend
+    let baseSlug = generateSlugFromTitle(title);
+    
+    // Fallback if slug becomes empty after processing
+    if (!baseSlug) {
+        baseSlug = 'untitled-post';
+    }
+
+    // Generate a unique slug with random number for guaranteed uniqueness
+    let finalSlug = '';
+    let isUnique = false;
+    let attempts = 0;
+    const maxAttempts = 50;
+
+    while (!isUnique && attempts < maxAttempts) {
+        // Generate random number (4-6 digits for better uniqueness)
+        const randomNum = Math.floor(Math.random() * 900000) + 100000; // 6-digit random number
+        finalSlug = `${baseSlug}-${randomNum}`;
+
+        // Check if this slug already exists
+        const existingPost = await sql`
+            SELECT id FROM posts WHERE slug = ${finalSlug}
+        `;
+
+        if (existingPost.length === 0) {
+            isUnique = true;
+        }
+        
+        attempts++;
+    }
+
+    if (!isUnique) {
+        // Fallback to nanoid for extreme edge cases
+        finalSlug = `${baseSlug}-${nanoid(8)}`;
+    }
+
+    try {
+        // Insert the new post with the final unique slug and category
+        await sql`
+            INSERT INTO posts (slug, title, content, author, category)
+            VALUES (${finalSlug}, ${title}, ${content}, ${user.id}, ${category})
+        `;
+        
+        // Return success with the slug for potential use
+        return { success: true, slug: finalSlug };
+    } catch (error) {
+        console.error("Error creating post:", error);
+        throw new Error("Failed to create post");
+    }
 }

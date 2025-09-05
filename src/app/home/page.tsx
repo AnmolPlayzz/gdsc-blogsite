@@ -5,7 +5,7 @@ import styles from "./page.module.css";
 
 export default async function HomePage() {
     const { user } = await getCurrentSession();
-
+    console.log("Current User:", user);
     if (!user) {
         return redirect("/login");
     }
