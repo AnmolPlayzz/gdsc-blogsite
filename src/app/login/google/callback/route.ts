@@ -48,7 +48,7 @@ export async function GET(request: Request): Promise<Response> {
             return new Response(null, {
                 status: 302,
                 headers: {
-                    Location: "/home"
+                    Location: "/"
                 }
             });
         } else {
@@ -64,7 +64,7 @@ export async function GET(request: Request): Promise<Response> {
             return new Response(null, {
                 status: 302,
                 headers: {
-                    Location: "/home"
+                    Location: "/"
                 }
             });
         }

@@ -23,7 +23,7 @@ export default function NavBar({ user }: NavBarProps) {
 
   const isActiveLink = (href: string) => {
     if (href === "/" && pathname === "/") return true;
-    if (href === "/" && pathname === "/home") return true;
+    if (href === "/" && pathname === "/") return true;
     if (href !== "/" && pathname.startsWith(href)) return true;
     return false;
   };
@@ -33,7 +33,7 @@ export default function NavBar({ user }: NavBarProps) {
       <div className={styles.container}>
         {/* Logo and App Name */}
         <div className={styles.logo}>
-          <Link href="/home" className={styles.logoLink}>
+          <Link href="/" className={styles.logoLink}>
             <div className={styles.logoIcon}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -164,7 +164,7 @@ export default function NavBar({ user }: NavBarProps) {
         {/* Mobile Menu Dropdown */}
         {isMenuOpen && (
           <div className={styles.mobileMenu}>
-            <Link href="/home" className={`${styles.mobileNavLink} ${isActiveLink("/") ? styles.activeMobileLink : ""}`} onClick={toggleMenu}>
+            <Link href="/" className={`${styles.mobileNavLink} ${isActiveLink("/") ? styles.activeMobileLink : ""}`} onClick={toggleMenu}>
               Home
             </Link>
             {user && (
