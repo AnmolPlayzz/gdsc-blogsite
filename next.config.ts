@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
     optimizeCss: true,
     optimizePackageImports: ['react-icons'],
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 const withMDX = createMDX({

@@ -18,7 +18,6 @@ export default function CreatePostForm({ categories }: CreatePostFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
-    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

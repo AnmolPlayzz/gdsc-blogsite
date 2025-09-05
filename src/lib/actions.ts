@@ -273,3 +273,83 @@ export async function createPost(formData: FormData) {
         throw new Error("Failed to create post");
     }
 }
+
+// Comment-related interfaces and functions
+export interface Comment {
+    id: number;
+    author: string;
+    author_name: string;
+    content: string;
+    post_id: string;
+    created_at: Date;
+}
+
+export async function getCommentsByPostSlug(postSlug: string): Promise<Comment[]> {
+    try {
+        if (!postSlug || postSlug.trim().length === 0) {
+            throw new Error("Post slug is required");
+        }
+
+        const comments = await sql`
+            SELECT c.*, u.name as author_name 
+            FROM comments c
+            LEFT JOIN users u ON c.author = u.id
+            WHERE c.post_id = ${postSlug}
+            ORDER BY c.created_at ASC
+        `;
+
+        return comments.map((comment: any) => ({
+            id: comment.id,
+            author: comment.author,
+            author_name: comment.author_name || 'Unknown User',
+            content: comment.content,
+            post_id: comment.post_id,
+            created_at: new Date(comment.created_at)
+        }));
+    } catch (error) {
+        console.error("Error fetching comments:", error);
+        throw new Error("Failed to fetch comments");
+    }
+}
+
+export async function createComment(formData: FormData) {
+    const { user } = await getCurrentSession();
+    
+    if (!user) {
+        throw new Error("You must be logged in to comment");
+    }
+
+    const content = formData.get("content") as string;
+    const postSlug = formData.get("postSlug") as string;
+
+    // Validation
+    if (!content || content.trim().length === 0) {
+        throw new Error("Comment content is required");
+    }
+
+    if (!postSlug || postSlug.trim().length === 0) {
+        throw new Error("Post slug is required");
+    }
+
+    // Verify that the post exists
+    const existingPost = await sql`
+        SELECT id FROM posts WHERE slug = ${postSlug}
+    `;
+
+    if (existingPost.length === 0) {
+        throw new Error("Post not found");
+    }
+
+    try {
+        // Insert the new comment
+        await sql`
+            INSERT INTO comments (author, content, post_id)
+            VALUES (${user.id}, ${content.trim()}, ${postSlug})
+        `;
+        
+        return { success: true };
+    } catch (error) {
+        console.error("Error creating comment:", error);
+        throw new Error("Failed to create comment");
+    }
+}

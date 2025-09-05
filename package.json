@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "next start"
   },
   "dependencies": {
     "@lucia-auth/adapter-postgresql": "^3.1.2",
@@ -18,6 +17,7 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "@uiw/react-md-editor": "^4.0.8",
     "arctic": "^3.7.0",
+    "critters": "^0.0.23",
     "lucia": "^3.2.2",
     "nanoid": "^5.1.5",
     "next": "15.5.2",

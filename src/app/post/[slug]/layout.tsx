@@ -6,9 +6,9 @@ export default async function PostLayout({
     params 
 }: { 
     children: React.ReactNode, 
-    params: { slug: string } 
+    params: Promise<{ slug: string }> 
 }) {
-    const slug = params.slug;
+    const { slug } = await params;
     
     const post = await getPostBySlug(slug);
     
