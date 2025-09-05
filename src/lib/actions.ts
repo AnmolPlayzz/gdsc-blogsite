@@ -353,3 +353,176 @@ export async function createComment(formData: FormData) {
         throw new Error("Failed to create comment");
     }
 }
+
+// Management-related functions
+export async function getUserPosts(): Promise<PostSummary[]> {
+    const { user } = await getCurrentSession();
+    
+    if (!user) {
+        throw new Error("You must be logged in to view your posts");
+    }
+
+    try {
+        const posts = await sql`
+            SELECT 
+                p.id,
+                p.slug,
+                p.title,
+                LEFT(p.content, 200) as excerpt,
+                u.name as author_name,
+                p.category,
+                p.created_at
+            FROM posts p
+            LEFT JOIN users u ON p.author = u.id
+            WHERE p.author = ${user.id}
+            ORDER BY p.created_at DESC
+        `;
+
+        return posts.map((post: any) => ({
+            id: post.id,
+            slug: post.slug,
+            title: post.title,
+            excerpt: post.excerpt + (post.excerpt.length >= 200 ? '...' : ''),
+            author_name: post.author_name || 'Unknown Author',
+            category: post.category,
+            created_at: new Date(post.created_at)
+        }));
+    } catch (error) {
+        console.error("Error fetching user posts:", error);
+        throw new Error("Failed to fetch your posts");
+    }
+}
+
+export async function getUserPostById(postId: number): Promise<Post | null> {
+    const { user } = await getCurrentSession();
+    
+    if (!user) {
+        throw new Error("You must be logged in to view post details");
+    }
+
+    try {
+        const posts = await sql`
+            SELECT p.*, u.name as author_name 
+            FROM posts p
+            LEFT JOIN users u ON p.author = u.id
+            WHERE p.id = ${postId} AND p.author = ${user.id}
+        `;
+
+        if (posts.length === 0) {
+            return null;
+        }
+
+        const post = posts[0];
+        return {
+            id: post.id,
+            slug: post.slug,
+            title: post.title,
+            content: post.content,
+            author: post.author_name || post.author,
+            category: post.category,
+            created_at: new Date(post.created_at)
+        };
+    } catch (error) {
+        console.error("Error fetching user post by ID:", error);
+        throw new Error("Failed to fetch post details");
+    }
+}
+
+export async function deletePost(postId: number) {
+    const { user } = await getCurrentSession();
+    
+    if (!user) {
+        throw new Error("You must be logged in to delete posts");
+    }
+
+    try {
+        // First, verify that the post belongs to the current user
+        const posts = await sql`
+            SELECT id, author FROM posts WHERE id = ${postId}
+        `;
+
+        if (posts.length === 0) {
+            throw new Error("Post not found");
+        }
+
+        const post = posts[0];
+        if (post.author !== user.id) {
+            throw new Error("You can only delete your own posts");
+        }
+
+        // Delete associated comments first (due to foreign key constraints)
+        await sql`
+            DELETE FROM comments WHERE post_id = (
+                SELECT slug FROM posts WHERE id = ${postId}
+            )
+        `;
+
+        // Then delete the post
+        await sql`
+            DELETE FROM posts WHERE id = ${postId}
+        `;
+
+        return { success: true };
+    } catch (error) {
+        console.error("Error deleting post:", error);
+        throw new Error("Failed to delete post");
+    }
+}
+
+export async function updatePost(formData: FormData) {
+    const { user } = await getCurrentSession();
+    
+    if (!user) {
+        throw new Error("You must be logged in to update posts");
+    }
+
+    const postId = parseInt(formData.get("postId") as string);
+    const title = formData.get("title") as string;
+    const content = formData.get("content") as string;
+    const category = formData.get("category") as string;
+
+    // Validation
+    if (!postId) {
+        throw new Error("Post ID is required");
+    }
+
+    if (!title || title.trim().length === 0) {
+        throw new Error("Title is required");
+    }
+
+    if (!content || content.trim().length === 0) {
+        throw new Error("Content is required");
+    }
+
+    if (!category || category.trim().length === 0) {
+        throw new Error("Category is required");
+    }
+
+    try {
+        // First, verify that the post belongs to the current user
+        const posts = await sql`
+            SELECT id, author, slug FROM posts WHERE id = ${postId}
+        `;
+
+        if (posts.length === 0) {
+            throw new Error("Post not found");
+        }
+
+        const post = posts[0];
+        if (post.author !== user.id) {
+            throw new Error("You can only update your own posts");
+        }
+
+        // Update the post
+        await sql`
+            UPDATE posts 
+            SET title = ${title}, content = ${content}, category = ${category}
+            WHERE id = ${postId}
+        `;
+
+        return { success: true, slug: post.slug };
+    } catch (error) {
+        console.error("Error updating post:", error);
+        throw new Error("Failed to update post");
+    }
+}
