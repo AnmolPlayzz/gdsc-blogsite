@@ -1,0 +1,283 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.header {
+    margin-bottom: 40px;
+}
+
+.header h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #ffffff, #e0e0e0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+}
+
+.filters {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+}
+
+.searchContainer {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.searchInput {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 16px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: rgba(135, 125, 255, 1);
+    box-shadow: 0 0 0 2px rgba(135, 125, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.searchInput::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.searchButton {
+    padding: 12px 24px;
+    background: linear-gradient(-90deg, rgba(255, 156, 245, 1) 0%, rgba(165, 84, 232, 1) 31.61%, rgba(135, 125, 255, 1) 66.25%, rgba(125, 212, 255, 1) 100%);
+    color: black;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.searchButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(135, 125, 255, 0.3);
+}
+
+.categoryFilter {
+    width: 100%;
+    max-width: 300px;
+}
+
+.categorySelect {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.categorySelect:focus {
+    outline: none;
+    border-color: rgba(135, 125, 255, 1);
+    box-shadow: 0 0 0 2px rgba(135, 125, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.categorySelect option {
+    background: black;
+    color: white;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 18px;
+}
+
+.noPosts {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.noPosts p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.postsGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.postCard {
+    display: block;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.postCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    border-color: rgba(135, 125, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.postContent {
+    padding: 24px;
+}
+
+.postMeta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.category {
+    background: linear-gradient(-90deg, rgba(255, 156, 245, 0.8) 0%, rgba(165, 84, 232, 0.8) 31.61%, rgba(135, 125, 255, 0.8) 66.25%, rgba(125, 212, 255, 0.8) 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.date {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+}
+
+.postTitle {
+    color: white;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    line-height: 1.3;
+    transition: color 0.3s ease;
+}
+
+.postCard:hover .postTitle {
+    color: rgba(135, 125, 255, 1);
+}
+
+.postExcerpt {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    margin: 0 0 16px 0;
+    font-size: 14px;
+}
+
+.postFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.author {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+}
+
+.readMore {
+    color: rgba(135, 125, 255, 1);
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.postCard:hover .readMore {
+    color: rgba(125, 212, 255, 1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 10px;
+    }
+    .filters {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .categoryFilter {
+        max-width: 100%;
+    }
+    .header h2 {
+        font-size: 2rem;
+    }
+    
+    .filters {
+        gap: 15px;
+    }
+    
+    .searchContainer {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .searchButton {
+        width: 100%;
+    }
+    
+    .postsGrid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .postContent {
+        padding: 20px;
+    }
+    
+    .postMeta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .postFooter {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 15px 8px;
+    }
+    
+    .postContent {
+        padding: 16px;
+    }
+    
+    .postTitle {
+        font-size: 1.2rem;
+    }
+}
